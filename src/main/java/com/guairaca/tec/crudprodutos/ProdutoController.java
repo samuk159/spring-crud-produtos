@@ -1,9 +1,18 @@
 package com.guairaca.tec.crudprodutos;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,9 +32,46 @@ public class ProdutoController {
 		return repository.save(produto);
 	}
 	
-	@GetMapping(path = "/buscar-todos")
+	@GetMapping
 	public List<Produto> buscarTodos() {
 		return repository.findAll();
+	}
+	
+	@GetMapping("/{id}")
+	public Optional<Produto> buscarPorId(@PathVariable Long id) {
+		return repository.findById(id);
+	}
+	
+	@PostMapping
+	public Produto criar(@RequestBody Produto produto) {
+		return repository.save(produto);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Produto> atualizar(
+		@PathVariable Long id, @RequestBody Produto produto
+	) {
+		Optional<Produto> opt = repository.findById(id);
+		
+		if (opt.isPresent()) {
+			produto.setId(id);
+			produto = repository.save(produto);
+			return ResponseEntity.ok(produto);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Produto> excluir(@PathVariable Long id) {
+		Optional<Produto> opt = repository.findById(id);
+		
+		if (opt.isPresent()) {
+			repository.deleteById(id);
+			return ResponseEntity.noContent().build();
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 }

@@ -4,11 +4,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Entity
 public class Produto {
 
 	@Id
 	@GeneratedValue
+	@JsonProperty(access = Access.READ_ONLY)
 	private Long id;
 	
 	private String nome;
