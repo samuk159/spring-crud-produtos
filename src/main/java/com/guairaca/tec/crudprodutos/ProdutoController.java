@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,8 +44,9 @@ public class ProdutoController {
 	}
 	
 	@PostMapping
-	public Produto criar(@RequestBody Produto produto) {
-		return repository.save(produto);
+	public ResponseEntity<Produto> criar(@RequestBody Produto produto) {
+		produto = repository.save(produto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(produto);
 	}
 	
 	@PutMapping("/{id}")
