@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,8 +37,14 @@ public class ProdutoController {
 	}
 	
 	@GetMapping
-	public List<Produto> buscarTodos() {
-		return repository.findAll();
+	public Page<Produto> buscarTodos(
+		Pageable pageable, @RequestParam(required = false) String nome
+	) {
+		if (nome != null) {
+			return repository.findAllByNomeContaining(nome, pageable);
+		} else {
+			return repository.findAll(pageable);
+		}
 	}
 	
 	@GetMapping("/{id}")
