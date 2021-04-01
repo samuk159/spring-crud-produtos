@@ -1,13 +1,19 @@
 package com.guairaca.tec.crudprodutos;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,13 +44,37 @@ public class ProdutoController {
 	
 	@GetMapping
 	public Page<Produto> buscarTodos(
-		Pageable pageable, @RequestParam(required = false) String nome
+		Pageable pageable, 
+		@RequestParam(required = false) String nome,
+		@RequestParam(required = false) Float valor1,
+		@RequestParam(required = false) Float valor2
 	) {
-		if (nome != null) {
-			return repository.findAllByNomeContaining(nome, pageable);
-		} else {
-			return repository.findAll(pageable);
-		}
+		Specification<Produto> specification = new Specification<Produto>() {
+			@Override
+			public Predicate toPredicate(
+				Root<Produto> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder
+			) {
+				List<Predicate> predicates = new ArrayList<>();
+				
+				if (nome != null) {
+					predicates.add(
+						criteriaBuilder.like(root.get("nome"), "%" + nome + "%")
+					);
+				}
+				
+				if (valor1 != null && valor2 != null) {
+					predicates.add(
+						criteriaBuilder.between(root.get("preco"), valor1, valor2)
+					);
+				}
+				
+				return criteriaBuilder.and(predicates.toArray(
+					new Predicate[predicates.size()]
+				));
+			}
+		};
+		
+		return repository.findAll(specification, pageable);
 	}
 	
 	@GetMapping("/{id}")
