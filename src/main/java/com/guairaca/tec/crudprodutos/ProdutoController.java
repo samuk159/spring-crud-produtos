@@ -69,9 +69,19 @@ public class ProdutoController {
 					);
 				}
 				
-				if (precoMin != null && precoMax != null) {
+				if (precoMin != null) {
 					predicates.add(
-						criteriaBuilder.between(root.get("preco"), precoMin, precoMax)
+						criteriaBuilder.greaterThanOrEqualTo(
+							root.get("preco"), precoMin
+						)
+					);
+				}
+				
+				if (precoMax != null) {
+					predicates.add(
+						criteriaBuilder.lessThanOrEqualTo(
+							root.get("preco"), precoMax
+						)
 					);
 				}
 				
