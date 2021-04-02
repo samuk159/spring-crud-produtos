@@ -53,8 +53,8 @@ public class ProdutoController {
 	public Page<Produto> buscarTodos(
 		Pageable pageable, 
 		@RequestParam(required = false) String nome,
-		@RequestParam(required = false) Float valor1,
-		@RequestParam(required = false) Float valor2
+		@RequestParam(required = false) Float precoMin,
+		@RequestParam(required = false) Float precoMax
 	) {
 		Specification<Produto> specification = new Specification<Produto>() {
 			@Override
@@ -69,9 +69,9 @@ public class ProdutoController {
 					);
 				}
 				
-				if (valor1 != null && valor2 != null) {
+				if (precoMin != null && precoMax != null) {
 					predicates.add(
-						criteriaBuilder.between(root.get("preco"), valor1, valor2)
+						criteriaBuilder.between(root.get("preco"), precoMin, precoMax)
 					);
 				}
 				

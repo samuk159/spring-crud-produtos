@@ -24,7 +24,7 @@ public class Produto {
 	private String nome;
 	
 	@NotNull
-	@Min(value = 1)
+	@Min(value = 1, message = "Preço deve ser maior ou igual á 1")
 	private Float preco;
 	
 	public Long getId() {
