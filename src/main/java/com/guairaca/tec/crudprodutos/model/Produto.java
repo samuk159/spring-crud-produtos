@@ -1,8 +1,9 @@
-package com.guairaca.tec.crudprodutos;
+package com.guairaca.tec.crudprodutos.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,9 @@ public class Produto {
 	@Min(value = 1, message = "Preço deve ser maior ou igual á 1")
 	private Float preco;
 	
+	@ManyToOne
+	private Categoria categoria;
+	
 	public Long getId() {
 		return id;
 	}
@@ -44,6 +48,12 @@ public class Produto {
 	}
 	public void setPreco(Float preco) {
 		this.preco = preco;
+	}
+	public Categoria getCategoria() {
+		return categoria;
+	}
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
 	}
 	
 }

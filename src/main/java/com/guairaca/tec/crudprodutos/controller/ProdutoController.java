@@ -1,4 +1,4 @@
-package com.guairaca.tec.crudprodutos;
+package com.guairaca.tec.crudprodutos.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.guairaca.tec.crudprodutos.model.Produto;
+import com.guairaca.tec.crudprodutos.repository.ProdutoRepository;
 
 @RestController
 @RequestMapping(path = "/produtos")
