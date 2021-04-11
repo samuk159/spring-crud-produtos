@@ -13,12 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
-public class Produto {
-
-	@Id
-	@GeneratedValue
-	@JsonProperty(access = Access.READ_ONLY)
-	private Long id;
+public class Produto extends Base {
 	
 	@NotBlank
 	@Size(min = 3, max = 50)
@@ -31,12 +26,6 @@ public class Produto {
 	@ManyToOne
 	private Categoria categoria;
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public String getNome() {
 		return nome;
 	}

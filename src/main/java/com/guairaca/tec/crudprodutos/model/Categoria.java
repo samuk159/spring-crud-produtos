@@ -14,11 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
-public class Categoria {
-
-	@Id
-	@GeneratedValue
-	private Long id;
+public class Categoria extends Base {
 	
 	@NotBlank
 	@Size(min = 3, max = 50)
@@ -27,14 +23,6 @@ public class Categoria {
 	@JsonIgnore
 	@OneToMany(mappedBy = "categoria")
 	private List<Produto> produtos;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public String getNome() {
 		return nome;

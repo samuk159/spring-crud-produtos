@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,18 +39,14 @@ import com.guairaca.tec.crudprodutos.repository.ProdutoRepository;
 
 @RestController
 @RequestMapping(path = "/produtos")
-public class ProdutoController {
+public class ProdutoController extends BaseController<Produto> {
 	
 	@Autowired
 	private ProdutoRepository repository;
-
-	@GetMapping(path = "/teste")
-	public Produto testeProdutos() {
-		Produto produto = new Produto();
-		produto.setNome("Tênis");
-		produto.setPreco(200f);
-		
-		return repository.save(produto);
+	
+	@Override
+	public JpaRepository<Produto, Long> getRepository() {
+		return repository;
 	}
 	
 	@GetMapping
@@ -95,57 +92,6 @@ public class ProdutoController {
 		};
 		
 		return repository.findAll(specification, pageable);
-	}
-	
-	@GetMapping("/{id}")
-	public Optional<Produto> buscarPorId(@PathVariable Long id) {
-		return repository.findById(id);
-	}
-	
-	@PostMapping
-	public ResponseEntity<Produto> criar(@Valid @RequestBody Produto produto) {
-		produto = repository.save(produto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(produto);
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<Produto> atualizar(
-		@PathVariable Long id, @Valid @RequestBody Produto produto
-	) {
-		Optional<Produto> opt = repository.findById(id);
-		
-		if (opt.isPresent()) {
-			produto.setId(id);
-			produto = repository.save(produto);
-			return ResponseEntity.ok(produto);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Produto> excluir(@PathVariable Long id) {
-		Optional<Produto> opt = repository.findById(id);
-		
-		if (opt.isPresent()) {
-			repository.deleteById(id);
-			return ResponseEntity.noContent().build();
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-	
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public Map<String, String> trataExceptionsDeValidacao(
-	  MethodArgumentNotValidException ex) {
-	    Map<String, String> erros = new HashMap<>();
-	    ex.getBindingResult().getAllErrors().forEach((error) -> {
-	        String nomeDoCampo = ((FieldError) error).getField();
-	        String mensagem = error.getDefaultMessage();
-	        erros.put(nomeDoCampo, mensagem);
-	    });
-	    return erros;
 	}
 	
 }

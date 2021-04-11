@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -30,10 +31,15 @@ import com.guairaca.tec.crudprodutos.repository.CategoriaRepository;
 
 @RestController
 @RequestMapping(path = "/categorias")
-public class CategoriaController {
+public class CategoriaController extends BaseController<Categoria> {
 	
 	@Autowired
 	private CategoriaRepository repository;
+	
+	@Override
+	public JpaRepository<Categoria, Long> getRepository() {
+		return repository;
+	}
 	
 	@GetMapping
 	public Page<Categoria> buscarTodos(
@@ -45,57 +51,6 @@ public class CategoriaController {
 		} else {
 			return repository.findAll(pageable);
 		}
-	}
-	
-	@GetMapping("/{id}")
-	public Optional<Categoria> buscarPorId(@PathVariable Long id) {
-		return repository.findById(id);
-	}
-	
-	@PostMapping
-	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria produto) {
-		produto = repository.save(produto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(produto);
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<Categoria> atualizar(
-		@PathVariable Long id, @Valid @RequestBody Categoria produto
-	) {
-		Optional<Categoria> opt = repository.findById(id);
-		
-		if (opt.isPresent()) {
-			produto.setId(id);
-			produto = repository.save(produto);
-			return ResponseEntity.ok(produto);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Categoria> excluir(@PathVariable Long id) {
-		Optional<Categoria> opt = repository.findById(id);
-		
-		if (opt.isPresent()) {
-			repository.deleteById(id);
-			return ResponseEntity.noContent().build();
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-	
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public Map<String, String> trataExceptionsDeValidacao(
-	  MethodArgumentNotValidException ex) {
-	    Map<String, String> erros = new HashMap<>();
-	    ex.getBindingResult().getAllErrors().forEach((error) -> {
-	        String nomeDoCampo = ((FieldError) error).getField();
-	        String mensagem = error.getDefaultMessage();
-	        erros.put(nomeDoCampo, mensagem);
-	    });
-	    return erros;
 	}
 	
 }
