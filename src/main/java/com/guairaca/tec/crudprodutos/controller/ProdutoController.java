@@ -67,13 +67,13 @@ public class ProdutoController {
 			) {
 				List<Predicate> predicates = new ArrayList<>();
 				
-				if (nome != null && nome.isEmpty()) {
+				if (nome != null) {
 					predicates.add(
 						criteriaBuilder.like(root.get("nome"), "%" + nome + "%")
 					);
 				}
 				
-				if (categoria != null && !categoria.isEmpty()) {
+				if (categoria != null) {
 					predicates.add(criteriaBuilder.equal(
 						root.join("categoria").get("nome"), categoria
 					));
