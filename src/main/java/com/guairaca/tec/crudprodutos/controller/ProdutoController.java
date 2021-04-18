@@ -53,6 +53,7 @@ public class ProdutoController extends BaseController<Produto> {
 	public Page<Produto> buscarTodos(
 		Pageable pageable, 
 		@RequestParam(required = false) String nome,
+		@RequestParam(required = false) String categoria,
 		@RequestParam(required = false) Float precoMin,
 		@RequestParam(required = false) Float precoMax
 	) {
@@ -67,6 +68,12 @@ public class ProdutoController extends BaseController<Produto> {
 					predicates.add(
 						criteriaBuilder.like(root.get("nome"), "%" + nome + "%")
 					);
+				}
+				
+				if (categoria != null) {
+					predicates.add(criteriaBuilder.equal(
+						root.join("categoria").get("nome"), nome
+					));
 				}
 				
 				if (precoMin != null) {
@@ -92,6 +99,11 @@ public class ProdutoController extends BaseController<Produto> {
 		};
 		
 		return repository.findAll(specification, pageable);
+	}
+	
+	@GetMapping("/categoria/{nome}")
+	public List<Produto> buscarPorCategoria(@PathVariable String nome) {
+		return repository.findAllByCategoria_Nome(nome);
 	}
 	
 }
