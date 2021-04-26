@@ -139,9 +139,7 @@ public class ProdutoController extends BaseController<Produto> {
 	}
 	
 	@GetMapping("/imagem/{id}")
-    public ResponseEntity<Resource> abrirImagem(
-		@PathVariable Long id
-	) throws IOException {
+    public ResponseEntity<Resource> abrirImagem(@PathVariable Long id) throws IOException {
 		Produto produto = repository.findById(id).get();
 		
 		if (produto.getImagem() == null || produto.getImagem().isEmpty()) {
@@ -156,7 +154,10 @@ public class ProdutoController extends BaseController<Produto> {
 
         return ResponseEntity.ok()
              .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(path))
-             //.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+             /*.header(
+        		 HttpHeaders.CONTENT_DISPOSITION, 
+        		 "attachment; filename=\"" + file.getFilename() + "\""
+    		 )*/
              .body(file);
     }
 	
