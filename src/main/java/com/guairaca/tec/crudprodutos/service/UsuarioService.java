@@ -40,7 +40,7 @@ public class UsuarioService {
 		return repository.save(usuario);
 	}
 	
-	public String login(Usuario usuario) {		
+	public Usuario login(Usuario usuario) {		
 		Optional<Usuario> optional = repository.findByLogin(usuario.getLogin());
 		
 		if (optional.isEmpty()) {
@@ -51,15 +51,22 @@ public class UsuarioService {
 			throw new NullPointerException("Senha incorreta");
 		}
 		
+		usuario = optional.get();
+		
 		Calendar dataDeExpiracao = Calendar.getInstance();
 		dataDeExpiracao.add(Calendar.DAY_OF_MONTH, 1);
 		
-		return Jwts.builder()
+		String token = Jwts.builder()
 			.setSubject(usuario.getLogin())
+			.claim("id", usuario.getId())
+			.claim("isAdmin", usuario.getIsAdmin())
 			.setExpiration(dataDeExpiracao.getTime())
 			.setIssuedAt(new Date())
 			.signWith(SignatureAlgorithm.HS512, CHAVE)
 			.compact();
+		
+		usuario.setToken(token);
+		return usuario;
 	}
 	
 }

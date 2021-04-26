@@ -2,6 +2,7 @@ package com.guairaca.tec.crudprodutos.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -23,6 +24,9 @@ public class Usuario extends Base {
 	
 	@NotNull
 	private Boolean isAdmin;
+	
+	@Transient
+	private String token;
 
 	public Usuario() {
 		super();
@@ -61,6 +65,14 @@ public class Usuario extends Base {
 
 	public void setIsAdmin(Boolean isAdmin) {
 		this.isAdmin = isAdmin;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 	
 }

@@ -13,6 +13,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.guairaca.tec.crudprodutos.service.UsuarioService;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
@@ -32,15 +33,24 @@ public class JWTFilter extends GenericFilterBean {
 			
 			if (token != null) {
 				try {
-					String login = Jwts.parser()
+					Claims claims = Jwts.parser()
 							.setSigningKey(UsuarioService.CHAVE)
 							.parseClaimsJws(token)
-							.getBody()
-							.getSubject();
-					System.out.println(login);
+							.getBody();
+					String login = claims.getSubject();
 					
 					if (login != null) {
-						chain.doFilter(request, response);
+						Boolean isAdmin = claims.get("isAdmin", Boolean.class);
+						
+						if (isAdmin != null && isAdmin == true) {
+							chain.doFilter(request, response);
+						} else if ("GET".equals(req.getMethod())) {
+							chain.doFilter(request, response);
+						} else {
+							res.setStatus(403);
+							response.getWriter().println("Nao autorizado");
+						}
+						
 						return;
 					}                
 	            } catch (ExpiredJwtException e) {

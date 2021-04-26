@@ -18,12 +18,13 @@ public class AuthController {
 	private UsuarioService service;
 	
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody Usuario usuario) {
+	public ResponseEntity<Usuario> login(@RequestBody Usuario usuario) {
 		try {
 			return ResponseEntity.ok(service.login(usuario));
 		} catch (NullPointerException e) {
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body(e.getMessage());
+			return ResponseEntity.badRequest()
+				.header("mensagemErro", e.getMessage()).build();
 		}
 	}
 	
