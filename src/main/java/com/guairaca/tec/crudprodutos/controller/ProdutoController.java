@@ -1,5 +1,11 @@
 package com.guairaca.tec.crudprodutos.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,10 +20,13 @@ import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -33,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.guairaca.tec.crudprodutos.model.Produto;
 import com.guairaca.tec.crudprodutos.repository.ProdutoRepository;
@@ -105,5 +115,49 @@ public class ProdutoController extends BaseController<Produto> {
 	public List<Produto> buscarPorCategoria(@PathVariable String nome) {
 		return repository.findAllByCategoria_Nome(nome);
 	}
+	
+	@PostMapping("/imagem/{id}")
+	public Produto salvarImagem(
+		@RequestParam() MultipartFile arquivo, @PathVariable Long id
+	) throws IOException {
+		Produto produto = repository.findById(id).get();
+		String nomeImagem = arquivo.getOriginalFilename();
+		File pastaAtual = new File("");
+		File pastaImagens = new File(pastaAtual.getAbsolutePath() + "/imagens");
+		pastaImagens.mkdirs();
+		File arquivoImagem = new File(
+			pastaImagens.getAbsolutePath() + "/" + nomeImagem
+		);
+		Files.copy(
+			arquivo.getInputStream(), 
+			arquivoImagem.toPath(), 
+			StandardCopyOption.REPLACE_EXISTING
+		);
+		produto.setImagem(nomeImagem);
+				
+		return repository.save(produto);
+	}
+	
+	@GetMapping("/imagem/{id}")
+    public ResponseEntity<Resource> abrirImagem(
+		@PathVariable Long id
+	) throws IOException {
+		Produto produto = repository.findById(id).get();
+		
+		if (produto.getImagem() == null || produto.getImagem().isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		
+		File pastaAtual = new File("");
+        Resource file = new FileSystemResource(new File(
+    		pastaAtual.getAbsolutePath() + "/imagens/" + produto.getImagem())
+		);
+        Path path = file.getFile().toPath();
+
+        return ResponseEntity.ok()
+             .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(path))
+             //.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+             .body(file);
+    }
 	
 }

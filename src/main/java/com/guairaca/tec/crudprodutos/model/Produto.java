@@ -26,6 +26,8 @@ public class Produto extends Base {
 	@ManyToOne
 	private Categoria categoria;
 	
+	private String imagem;
+	
 	public String getNome() {
 		return nome;
 	}
@@ -43,6 +45,12 @@ public class Produto extends Base {
 	}
 	public void setCategoria(Categoria categoria) {
 		this.categoria = categoria;
+	}
+	public String getImagem() {
+		return imagem;
+	}
+	public void setImagem(String imagem) {
+		this.imagem = imagem;
 	}
 	
 }
