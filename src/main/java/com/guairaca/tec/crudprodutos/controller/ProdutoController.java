@@ -120,11 +120,22 @@ public class ProdutoController extends BaseController<Produto> {
 	public Produto salvarImagem(
 		@RequestParam() MultipartFile arquivo, @PathVariable Long id
 	) throws IOException {
-		Produto produto = repository.findById(id).get();
+		Produto produto = repository.findById(id).get();		
 		String nomeImagem = arquivo.getOriginalFilename();
 		File pastaAtual = new File("");
 		File pastaImagens = new File(pastaAtual.getAbsolutePath() + "/imagens");
 		pastaImagens.mkdirs();
+		
+		if (produto.getImagem() != null && !produto.getImagem().isEmpty()) {
+			File imagemAntiga = new File(
+				pastaImagens.getAbsolutePath() + "/" + produto.getImagem()
+			);
+			
+			if (imagemAntiga.exists()) {
+				imagemAntiga.delete();
+			}
+		}
+		
 		File arquivoImagem = new File(
 			pastaImagens.getAbsolutePath() + "/" + nomeImagem
 		);
@@ -180,6 +191,34 @@ public class ProdutoController extends BaseController<Produto> {
 		}
 		
 		return produto;
+	}
+	
+	@Override
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Produto> excluir(@PathVariable Long id) {
+		Optional<Produto> opt = getRepository().findById(id);
+		
+		if (opt.isPresent()) {
+			Produto produto = opt.get();
+			
+			if (produto.getImagem() != null 
+				&& !produto.getImagem().isEmpty()) {
+				File pastaAtual = new File("");
+				File arquivo = new File(
+		    		pastaAtual.getAbsolutePath() 
+		    		+ "/imagens/" + produto.getImagem()
+				);
+				
+				if (arquivo.exists()) {
+					arquivo.delete();
+				}
+			}
+			
+			getRepository().deleteById(id);
+			return ResponseEntity.noContent().build();
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 }
