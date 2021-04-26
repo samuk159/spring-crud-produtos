@@ -148,8 +148,8 @@ public class ProdutoController extends BaseController<Produto> {
 		
 		File pastaAtual = new File("");
         Resource file = new FileSystemResource(new File(
-    		pastaAtual.getAbsolutePath() + "/imagens/" + produto.getImagem())
-		);
+    		pastaAtual.getAbsolutePath() + "/imagens/" + produto.getImagem()
+		));
         Path path = file.getFile().toPath();
 
         return ResponseEntity.ok()
@@ -160,5 +160,26 @@ public class ProdutoController extends BaseController<Produto> {
     		 )*/
              .body(file);
     }
+	
+	@DeleteMapping("/imagem/{id}")
+	public Produto removerImagem(@PathVariable Long id) {
+		Produto produto = repository.findById(id).get();
+		
+		if (produto.getImagem() != null && !produto.getImagem().isEmpty()) {
+			File pastaAtual = new File("");
+			File arquivo = new File(
+	    		pastaAtual.getAbsolutePath() + "/imagens/" + produto.getImagem()
+			);
+			
+			if (arquivo.exists()) {
+				arquivo.delete();
+			}
+			
+			produto.setImagem(null);			
+			return repository.save(produto);
+		}
+		
+		return produto;
+	}
 	
 }
