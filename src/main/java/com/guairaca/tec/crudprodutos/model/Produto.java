@@ -1,5 +1,6 @@
 package com.guairaca.tec.crudprodutos.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -28,6 +29,9 @@ public class Produto extends Base {
 	
 	private String imagem;
 	
+	@Column(columnDefinition = "TEXT")
+	private String urlImagem;
+	
 	public String getNome() {
 		return nome;
 	}
@@ -51,6 +55,12 @@ public class Produto extends Base {
 	}
 	public void setImagem(String imagem) {
 		this.imagem = imagem;
+	}
+	public String getUrlImagem() {
+		return urlImagem;
+	}
+	public void setUrlImagem(String urlImagem) {
+		this.urlImagem = urlImagem;
 	}
 	
 }
